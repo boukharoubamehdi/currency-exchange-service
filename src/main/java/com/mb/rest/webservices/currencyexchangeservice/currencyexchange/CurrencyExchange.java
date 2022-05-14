@@ -1,4 +1,4 @@
-package com.mb.rest.webservices.currencyexchangeservice.controller;
+package com.mb.rest.webservices.currencyexchangeservice.currencyexchange;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.mb.rest.webservices.currencyexchangeservice.controller;
+package com.mb.rest.webservices.currencyexchangeservice.currencyexchange;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
