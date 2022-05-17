@@ -1,6 +1,8 @@
 package com.mb.rest.webservices.currencyexchangeservice.currencyexchange.circuitbreaker;
 
+import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +14,9 @@ import org.springframework.web.client.RestTemplate;
 @RestController
 public class CircuitBreakerController {
 
+  // In this class we explored some important features that are provided by mainly a Circuit
+  // Breaker framework called resilience4j.
+  // We looked at Retry, CircuitBreaker, RateLimiter, and Bulkhead features.
   private final Logger logger = LoggerFactory.getLogger(CircuitBreakerController.class);
 
   @GetMapping("/sample-api-retry")
@@ -92,6 +97,36 @@ public class CircuitBreakerController {
     ResponseEntity<String> forEntity =
         new RestTemplate().getForEntity("http://localhost:8000/some-dummy-url", String.class);
     return forEntity.getBody();
+  }
+
+  @GetMapping("/sample-api-rate-limiter")
+  // What is rate limiting?
+  // Basically, rate limiting is all about saying, in 10 seconds, we'd want to only allow 10000
+  // calls API
+  @RateLimiter(name = "default")
+  // you can also configure how many concurrent calls are allowed.
+  // That's called BulkHead.
+  @Bulkhead(name = "default")
+  public String sampleApiRateLimiter() {
+    // We are sending 1 request per second.
+    // watch -n 0.1 curl http://localhost:8000/sample-api-rate-limiter
+
+    logger.info("Sample Api rate-limiter received call");
+
+    return "Sample Api rate-limiter";
+  }
+
+  @GetMapping("/sample-api-rate-limiter-bulk-head")
+  // Example of a custom configuration (instead of using the "default" config)
+  @RateLimiter(name = "sample-api-rate-limiter")
+  @Bulkhead(name = "sample-api-rate-limiter")
+  public String sampleApiRateLimiterBulkheadCustomConfig() {
+    // We are sending 1 request per second.
+    // watch -n 0.1 curl http://localhost:8000/sample-api-rate-limiter-bulk-head
+
+    logger.info("Sample Api rate-limiter-bulk-head received call");
+
+    return "Sample Api rate-limiter-bulk-head";
   }
 
   // We can have different fallback methods for different kinds of exceptions.
